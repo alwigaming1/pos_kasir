@@ -4,13 +4,21 @@ cek_login();
 
 // Proses Ganti Password
 if(isset($_POST['ganti_pass'])){
-    $pass_baru = md5($_POST['pass_baru']);
-    $user_now = $_SESSION['user_nama']; // Asumsi session nyimpen username/nama
-    
-    // Update ke tabel users (Pastikan tabel users ada)
-    // $q = mysqli_query($koneksi, "UPDATE users SET password='$pass_baru' WHERE username='$user_now'");
-    
-    echo "<script>alert('Simulasi: Password berhasil diubah!');</script>";
+    // Validasi input
+    if($_POST['pass_baru'] != $_POST['pass_konf']){
+        echo "<script>alert('Konfirmasi password tidak cocok!');</script>";
+    } else {
+        $id_user = $_SESSION['user_id']; // Ambil ID dari session login
+        $pass_hash = password_hash($_POST['pass_baru'], PASSWORD_DEFAULT); // Enkripsi Aman
+        
+        $update = mysqli_query($koneksi, "UPDATE users SET password='$pass_hash' WHERE id='$id_user'");
+        
+        if($update){
+            echo "<script>alert('Password berhasil diubah! Silakan login ulang.'); window.location='logout.php';</script>";
+        } else {
+            echo "<script>alert('Gagal merubah password.');</script>";
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
